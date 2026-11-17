@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Guía de instalación de un hablador</title>
+<style>
+  @page { size: letter; margin: 10mm 13mm; }
+  * { box-sizing: border-box; }
+  body { font-family: Inter, "Helvetica Neue", Arial, sans-serif; font-size: 8.8pt; line-height: 1.3; color: #16181c; margin: 0; }
+  header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.6pt solid #16181c; padding-bottom: 4pt; margin-bottom: 7pt; }
+  h1 { font-size: 16pt; margin: 0; letter-spacing: -0.2pt; }
+  header span { font-size: 8.5pt; color: #555c66; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8mm; }
+  section { break-inside: avoid; margin-bottom: 7pt; }
+  h2 { font-size: 10.5pt; margin: 0 0 3pt; display: flex; align-items: center; gap: 5pt; }
+  h2 b { display: inline-flex; width: 15pt; height: 15pt; border-radius: 50%; background: #16181c; color: #fff; font-size: 8.5pt; align-items: center; justify-content: center; flex: none; }
+  ol, ul { margin: 0; padding-left: 13pt; } li { margin-bottom: 1.6pt; }
+  p { margin: 0 0 3pt; }
+  code { font-family: "DejaVu Sans Mono", Menlo, monospace; font-size: 8pt; background: #eef0f3; padding: 0.5pt 3pt; border-radius: 2pt; white-space: nowrap; }
+  .caja { border: 0.8pt solid #16181c; border-radius: 4pt; padding: 5pt 7pt; margin-top: 3pt; }
+  .caja.fuerte { background: #16181c; color: #fff; border: 0; }
+  .caja.fuerte code { background: #3a3f47; color: #fff; }
+  .sub { font-weight: 700; margin-top: 3pt; }
+  .datos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5mm; border: 0.8pt solid #16181c; border-radius: 4pt; padding: 6pt 8pt 9pt; font-size: 8pt; color: #555c66; margin-bottom: 8pt; }
+  .datos div { border-bottom: 0.6pt solid #8a919b; height: 20pt; }
+  footer { border-top: 0.6pt solid #8a919b; margin-top: 2pt; padding-top: 4pt; font-size: 7.8pt; color: #555c66; }
+</style></head><body>
+<header><h1>Instalar un hablador de reseñas</h1><span>10 minutos por negocio · iPhone + app NFC Tools</span></header>
+
+<div class="datos"><div>Negocio</div><div>Código del hablador</div><div>Fecha</div><div>Contacto</div></div>
+
+<div class="cols">
+<div>
+<section>
+<h2><b>1</b>Sacar el enlace de reseña del negocio</h2>
+<p class="sub">Opción A — con el dueño (la mejor)</p>
+<ol>
+  <li>El dueño busca en Google el nombre de su negocio, con la cuenta que lo administra.</li>
+  <li>En el panel del perfil toca <b>Pedir opiniones</b> (también puede decir «Solicitar reseñas»).</li>
+  <li>Copia el enlace y te lo envía por WhatsApp. Se ve así: <code>https://g.page/r/XXXXXXX/review</code></li>
+</ol>
+<p class="sub">Opción B — sin el dueño</p>
+<ol>
+  <li>Busca en Google «Place ID Finder» y abre el resultado de <i>developers.google.com</i>.</li>
+  <li>Escribe el nombre del negocio y la ciudad en el mapa y elígelo. Copia el <b>Place ID</b> (empieza por <code>ChIJ</code>).</li>
+  <li>Arma el enlace pegando el Place ID al final de:<br><code>https://search.google.com/local/writereview?placeid=</code></li>
+</ol>
+<div class="caja">Abre el enlace en tu celular antes de seguir: debe salir el nombre correcto del negocio y las 5 estrellas para calificar.</div>
+</section>
+
+<section>
+<h2><b>2</b>Asignar el código al negocio</h2>
+<ol>
+  <li>Mira el número del sticker QR del hablador (ej. <b>017</b>).</li>
+  <li>Abre <code>github.com/JuanSosaaa/r</code> → <b>codigos.json</b> → lápiz (editar).</li>
+  <li>En la línea de ese número escribe el nombre y pega el enlace entre las comillas:<br><code>"017": { "negocio": "Café La Plaza", "url": "https://…" },</code></li>
+  <li>Toca <b>Commit changes…</b> dos veces. Espera 1–2 minutos.</li>
+  <li>Abre <code>juansosaaa.github.io/r/panel/</code>: el código debe salir <b>Activo</b>.</li>
+</ol>
+</section>
+
+<section>
+<h2><b>3</b>Grabar el chip NFC (NFC Tools, iPhone)</h2>
+<ol>
+  <li>Abre <b>NFC Tools</b> → <b>Escribir</b> → <b>Añadir un registro</b> → <b>URL / URI</b>.</li>
+  <li>Escribe la dirección con el número del hablador y toca OK:<br><code>https://juansosaaa.github.io/r/?c=017</code></li>
+  <li>Toca <b>Escribir</b> y acerca la parte superior del iPhone al círculo del hablador hasta que vibre y salga el visto bueno.</li>
+</ol>
+<p>Si la app está en inglés: <i>Write → Add a record → URL/URI → Write</i>.</p>
+</section>
+</div>
+
+<div>
+<section>
+<h2><b>4</b>Probar — siempre antes de bloquear</h2>
+<ul>
+  <li><b>NFC:</b> cierra NFC Tools, deja el iPhone desbloqueado en la pantalla de inicio y acerca la parte superior al círculo. Toca el aviso que aparece arriba.</li>
+  <li><b>QR:</b> abre la cámara y apunta al sticker.</li>
+  <li><b>Android:</b> si puedes, prueba también con uno (NFC encendido, la parte de atrás del celular contra el círculo).</li>
+</ul>
+<div class="caja">Las tres pruebas deben abrir la reseña de <b>este</b> negocio. Si sale «Hablador sin activar», falta el paso 2 o todavía no pasan los 2 minutos. Si abre otro negocio, el número del chip no coincide con el del sticker: repite el paso 3.</div>
+</section>
+
+<section>
+<h2><b>5</b>Bloquear el chip</h2>
+<p>Bloquear impide que cualquier persona con un celular regrabe el chip. <b>Es permanente:</b> no se puede deshacer.</p>
+<ol>
+  <li>Bloquea solo cuando el paso 4 salió bien por NFC.</li>
+  <li>NFC Tools → <b>Otros</b> → <b>Bloquear etiqueta</b> → confirma y acerca el iPhone. (<i>Other → Lock tag</i>.)</li>
+  <li>Vuelve a probar por NFC.</li>
+</ol>
+<div class="caja fuerte">Bloquear no te quita control: el chip solo guarda <code>…/r/?c=017</code>. El negocio al que lleva ese código lo cambias cuando quieras en <b>codigos.json</b>.<br>Por eso nunca cambies el nombre de la cuenta de GitHub ni del repositorio <b>r</b>.</div>
+</section>
+
+<section>
+<h2><b>6</b>Entregar</h2>
+<ul>
+  <li>Ubícalo donde el cliente paga o espera: caja, mesa, mostrador. No lo apoyes contra metal (debilita el NFC).</li>
+  <li>Enseña al personal la frase: «¿Nos regala una reseña? Solo acerque el celular aquí».</li>
+  <li>Anota negocio, código y fecha en tu lista.</li>
+</ul>
+</section>
+
+<section>
+<h2><b>!</b>Reglas de Google (díselas al dueño)</h2>
+<ul>
+  <li>Se invita a <b>todos</b> los clientes, no solo a los contentos. El hablador lleva directo a Google, sin preguntas previas.</li>
+  <li>Nada de descuentos, regalos ni rifas a cambio de reseñas.</li>
+  <li>Ni el dueño ni los empleados reseñan su propio negocio.</li>
+</ul>
+</section>
+</div>
+</div>
+
+<footer>iPhone XS o más nuevo lee el chip sin abrir ninguna app. En iPhone 7, 8 y X hay que abrir el lector NFC desde el Centro de control; para esos clientes está el QR. · Los nombres de los botones pueden cambiar un poco con las actualizaciones de Google y NFC Tools.</footer>
+</body></html>

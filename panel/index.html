@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel de habladores</title>
+<style>
+  :root { color-scheme: light dark; --fondo:#f6f7f9; --tarjeta:#fff; --texto:#1c1f23; --suave:#667080; --linea:#e3e6eb; --ok:#137333; --okf:#e6f4ea; --mal:#b3261e; --malf:#fce8e6; --azul:#1a73e8; }
+  @media (prefers-color-scheme: dark) { :root { --fondo:#15171a; --tarjeta:#1f2226; --texto:#eef0f3; --suave:#9aa3af; --linea:#33383f; --ok:#81c995; --okf:#1e3a29; --mal:#f28b82; --malf:#4a2422; --azul:#8ab4f8; } }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:16px; background:var(--fondo); color:var(--texto); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  main { max-width:640px; margin:0 auto; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  .resumen { color:var(--suave); margin:0 0 14px; font-size:15px; }
+  .barra { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .barra a, .barra button { font:inherit; font-size:15px; font-weight:600; padding:10px 14px; border-radius:10px; border:1px solid var(--linea); background:var(--tarjeta); color:var(--azul); text-decoration:none; cursor:pointer; }
+  .error { background:var(--malf); color:var(--mal); padding:12px 14px; border-radius:10px; margin-bottom:14px; font-size:15px; line-height:1.4; }
+  ul { list-style:none; margin:0; padding:0; background:var(--tarjeta); border:1px solid var(--linea); border-radius:12px; overflow:hidden; }
+  li { display:flex; align-items:center; gap:12px; padding:11px 14px; border-top:1px solid var(--linea); min-height:52px; }
+  li:first-child { border-top:0; }
+  .num { font-variant-numeric:tabular-nums; font-weight:700; font-size:17px; width:38px; flex:none; }
+  .nombre { flex:1; min-width:0; overflow-wrap:anywhere; font-size:15px; }
+  .libre .nombre { color:var(--suave); }
+  .chip { font-size:12px; font-weight:700; padding:3px 8px; border-radius:999px; flex:none; }
+  .chip.ok { background:var(--okf); color:var(--ok); } .chip.mal { background:var(--malf); color:var(--mal); }
+  li a { color:var(--azul); font-size:14px; font-weight:600; text-decoration:none; flex:none; padding:6px 2px; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Panel de habladores</h1>
+  <p class="resumen" id="resumen">Cargando…</p>
+  <div class="barra">
+    <a id="editar" target="_blank" rel="noopener">Editar códigos en GitHub</a>
+    <button id="recargar" type="button">Recargar</button>
+  </div>
+  <div class="error" id="error" hidden></div>
+  <ul id="lista"></ul>
+</main>
+<script src="../comun.js"></script>
+<script>
+(function () {
+  // En GitHub Pages: usuario.github.io/repositorio/ -> enlace directo al editor.
+  var m = location.hostname.match(/^(.+)\.github\.io$/);
+  var repo = location.pathname.split("/")[1];
+  var editar = document.getElementById("editar");
+  if (m && repo) editar.href = "https://github.com/" + m[1] + "/" + repo + "/edit/main/codigos.json";
+  else editar.hidden = true;
+
+  function el(tag, clase, texto) {
+    var e = document.createElement(tag);
+    if (clase) e.className = clase;
+    if (texto != null) e.textContent = texto;
+    return e;
+  }
+
+  function cargar() {
+    var lista = document.getElementById("lista"), error = document.getElementById("error");
+    error.hidden = true;
+    Comun.cargarCodigos("../").then(function (codigos) {
+      lista.textContent = "";
+      var claves = Object.keys(codigos).sort(), asignados = 0, malos = 0;
+      claves.forEach(function (c) {
+        var item = codigos[c] || {};
+        var url = typeof item.url === "string" ? item.url.trim() : "";
+        var buena = Comun.validarUrl(url);
+        var li = el("li");
+        li.appendChild(el("span", "num", c));
+        if (buena) {
+          asignados++;
+          li.appendChild(el("span", "nombre", item.negocio || "(sin nombre)"));
+          li.appendChild(el("span", "chip ok", "Activo"));
+          var a = el("a", "", "Probar");
+          a.href = "../?c=" + c; a.target = "_blank"; a.rel = "noopener";
+          li.appendChild(a);
+        } else if (url) {
+          malos++;
+          li.appendChild(el("span", "nombre", (item.negocio || "(sin nombre)") + " — el enlace no es de Google o está mal copiado"));
+          li.appendChild(el("span", "chip mal", "Revisar"));
+        } else {
+          li.className = "libre";
+          li.appendChild(el("span", "nombre", item.negocio ? item.negocio + " (falta el enlace)" : "Libre"));
+        }
+        lista.appendChild(li);
+      });
+      document.getElementById("resumen").textContent =
+        asignados + " activos · " + (claves.length - asignados - malos) + " libres" +
+        (malos ? " · " + malos + " por revisar" : "");
+    }).catch(function (e) {
+      lista.textContent = "";
+      document.getElementById("resumen").textContent = "No se pudo leer codigos.json";
+      error.textContent = "El archivo codigos.json tiene un error de escritura y NINGÚN hablador está funcionando. " +
+        "Ábrelo en GitHub y revisa la última línea que editaste: comillas, dos puntos y la coma al final. (" + e.message + ")";
+      error.hidden = false;
+    });
+  }
+  document.getElementById("recargar").onclick = cargar;
+  cargar();
+})();
+</script>
+</body>
+</html>
